@@ -1,0 +1,94 @@
+apiVersion: v1
+entries:
+  server:
+  - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2025-03-17T14:43:49.161336612Z"
+    description: Web server
+    digest: 25b86eb7d59c8ba6bef17b0bb82d0d0435a0a355ec965cf9e8a5e7ed237a95fc
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 0.1.0-dev.8.main.4e3c4121
+    created: "2025-03-17T14:42:59.252909217Z"
+    description: Web server
+    digest: 8d311dbd6a7bc30550d1dd4206595a778bfcc61449f081254a6f5c561fe5b154
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.8.main.4e3c4121.tgz
+    version: 0.1.0-dev.8.main.4e3c4121
+  - apiVersion: v2
+    appVersion: 0.1.0-dev.8.fix-github-actio.2827ec4f
+    created: "2025-03-17T14:42:43.004512414Z"
+    description: Web server
+    digest: 2d052dd7ef32fa9452ea31fa8a3748ab5a069653753f6d373c0f8d86206ef96d
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.8.fix-github-actio.2827ec4f.tgz
+    version: 0.1.0-dev.8.fix-github-actio.2827ec4f
+  - apiVersion: v2
+    appVersion: 0.1.0-dev.7.fix-github-actio.880e9175
+    created: "2025-03-17T14:40:43.134906889Z"
+    description: Web server
+    digest: 3bd142cf2497b3c60f1f863734c2ec9bb1cb354ecef12cad59ef4fb96374e62a
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.7.fix-github-actio.880e9175.tgz
+    version: 0.1.0-dev.7.fix-github-actio.880e9175
+  - apiVersion: v2
+    appVersion: 0.1.0-dev.6.main.b71a6ba9
+    created: "2024-10-01T07:09:36.260789615Z"
+    description: Web server
+    digest: 4ab7adb9188dca90b468c3dde7fcbb8438562feb97b5d2ce58f836a4706f9dd8
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.6.main.b71a6ba9.tgz
+    version: 0.1.0-dev.6.main.b71a6ba9
+  - apiVersion: v2
+    appVersion: 0.1.0-dev.5.main.cdb1e0d1
+    created: "2024-08-20T14:25:15.456352704Z"
+    description: Web server
+    digest: 8770c17ea2d55b25d427a164ffb4fbaed8b35897db27ca85f050637ebd159ff2
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.5.main.cdb1e0d1.tgz
+    version: 0.1.0-dev.5.main.cdb1e0d1
+  - apiVersion: v2
+    appVersion: 0.1.0-dev.4.main.92881d52
+    created: "2024-03-22T14:42:39.705079716Z"
+    description: Web server
+    digest: f330eca6f21da4d36e5a2b39ddbdc70aaa989f20a57173e39751310936ca3fff
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.4.main.92881d52.tgz
+    version: 0.1.0-dev.4.main.92881d52
+  - apiVersion: v2
+    appVersion: 0.1.0-dev.4.feature-github-d.357b0a63
+    created: "2024-03-22T14:42:11.077237236Z"
+    description: Web server
+    digest: 67b091b788db2807b40868bb056738eeda738feeedbcabf611f29fcf81a85557
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.4.feature-github-d.357b0a63.tgz
+    version: 0.1.0-dev.4.feature-github-d.357b0a63
+  - apiVersion: v2
+    appVersion: 0.1.0-dev.3.feature-github-d.f40b5358
+    created: "2024-03-22T14:38:37.834389039Z"
+    description: Web server
+    digest: 7a9b04c4d0e0d38ec5500423dc9bc8d5481ef7fce6e9a23ed453d7563f68b42c
+    name: server
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.3.feature-github-d.f40b5358.tgz
+    version: 0.1.0-dev.3.feature-github-d.f40b5358
+generated: "2025-03-17T14:43:49.160673553Z"
