@@ -1,4 +1,4 @@
-# Template web-service
+# checkout service documentation(needs to be updated)
 Use this template for developing a web service.
 
 The template includes an example server application in Python with tests, automatically generated OpenAPI file, and an automatically generated client for accessing the server API from third-party applications.
