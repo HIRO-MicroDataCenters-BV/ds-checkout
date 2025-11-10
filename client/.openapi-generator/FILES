@@ -2,6 +2,7 @@ README.md
 docs/DefaultApi.md
 docs/ExampleResponse.md
 docs/HTTPValidationError.md
+docs/HealthCheck.md
 docs/Item.md
 docs/ItemsApi.md
 docs/ValidationError.md
@@ -18,6 +19,7 @@ template_web_client/configuration.py
 template_web_client/exceptions.py
 template_web_client/models/__init__.py
 template_web_client/models/example_response.py
+template_web_client/models/health_check.py
 template_web_client/models/http_validation_error.py
 template_web_client/models/item.py
 template_web_client/models/validation_error.py

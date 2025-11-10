@@ -21,6 +21,18 @@ paths:
           content:
             application/json:
               schema: {}
+  /health-check/:
+    get:
+      summary: Health check
+      description: Returns a 200 status code if the service is up and running
+      operationId: health_check
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
   /:
     get:
       summary: Example endpoint
@@ -179,6 +191,17 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    HealthCheck:
+      properties:
+        status:
+          type: string
+          title: Status
+          examples:
+          - OK
+      type: object
+      required:
+      - status
+      title: HealthCheck
     Item:
       properties:
         id:
