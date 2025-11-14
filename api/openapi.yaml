@@ -33,6 +33,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HealthCheck'
+  /orders:
+    post:
+      tags:
+      - Orders
+      summary: Store checkout order
+      description: 'Store checkout order temporarily
+
+
+        - Accepts JSON-LD format
+
+        - Generates UUID
+
+        - Stores in Redis with TTL
+
+        - Returns order_id for retrieval'
+      operationId: store_order_orders_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreOrderRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreOrderResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /orders/{order_id}:
+    get:
+      tags:
+      - Orders
+      summary: Retrieve checkout order
+      description: 'Retrieve checkout order by UUID
+
+
+        - Retrieves from Redis
+
+        - Transforms JSON-LD to plain JSON
+
+        - Returns order data'
+      operationId: retrieve_order_orders__order_id__get
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Order Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveOrderResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /:
     get:
       summary: Example endpoint
@@ -218,6 +287,49 @@ components:
       examples:
       - id: 1
         name: test name
+    RetrieveOrderResponse:
+      properties:
+        order_id:
+          type: string
+          title: Order Id
+        data:
+          additionalProperties: true
+          type: object
+          title: Data
+      type: object
+      required:
+      - order_id
+      - data
+      title: RetrieveOrderResponse
+      description: Response model for retrieve operation
+    StoreOrderRequest:
+      properties:
+        data:
+          additionalProperties: true
+          type: object
+          title: Data
+          description: JSON-LD order data
+      type: object
+      required:
+      - data
+      title: StoreOrderRequest
+      description: Request model for storing checkout order
+    StoreOrderResponse:
+      properties:
+        order_id:
+          type: string
+          title: Order Id
+          description: UUID of the stored order
+        expires_in_seconds:
+          type: integer
+          title: Expires In Seconds
+          description: TTL in seconds
+      type: object
+      required:
+      - order_id
+      - expires_in_seconds
+      title: StoreOrderResponse
+      description: Response model for store operation
     ValidationError:
       properties:
         loc:
