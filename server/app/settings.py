@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     ORDER_TTL_SECONDS: int = 7200  # 120 minutes
     ORDER_KEY_PREFIX: str = "order:"  # Prefix for order keys in storage
     ORDER_TTL_ENABLED: bool = True
+    MAX_PAYLOAD_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB
 
     model_config = SettingsConfigDict(
         env_file=".env",

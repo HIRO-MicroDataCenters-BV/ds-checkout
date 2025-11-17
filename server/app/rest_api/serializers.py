@@ -1,6 +1,13 @@
 from typing import Any, Dict
 
-from pydantic import BaseModel, Field
+import json
+
+from pydantic import BaseModel, Field, validator
+
+from app.settings import get_settings
+
+settings = get_settings()
+MAX_PAYLOAD_SIZE_BYTES = settings.MAX_PAYLOAD_SIZE_BYTES
 
 
 class HealthCheck(BaseModel):
@@ -11,7 +18,36 @@ class StoreOrderRequest(BaseModel):
     """Request model for storing checkout order"""
 
     data: Dict[str, Any] = Field(..., description="JSON-LD order data")
-    # TODO: Add validation for JSON-LD structure
+
+    @validator("data")
+    def validate_data(cls, v):
+        if not v:
+            raise ValueError("Order data cannot be empty")
+        data_size = len(json.dumps(v).encode("utf-8"))
+        if data_size > MAX_PAYLOAD_SIZE_BYTES:
+            raise ValueError(
+                f"Payload size ({data_size} bytes) exceeds maximum allowed "
+                f"({MAX_PAYLOAD_SIZE_BYTES} bytes)"
+            )
+        datasets = v.get("dcat:dataset", [])
+        if not isinstance(datasets, list):
+            raise ValueError("'dcat:dataset' must be a list.")
+        for idx, dataset in enumerate(datasets):
+            if "region" not in dataset:
+                raise ValueError(f"Dataset at index {idx} missing 'region'.")
+            if "dcat:distribution" not in dataset or not isinstance(
+                dataset["dcat:distribution"], list
+            ):
+                raise ValueError(
+                    f"Dataset at index {idx} missing 'dcat:distribution' list."
+                )
+            for didx, dist in enumerate(dataset["dcat:distribution"]):
+                if "dcat:accessURL" not in dist:
+                    raise ValueError(
+                        f"Distribution at index {didx} in dataset {idx} "
+                        f"missing 'dcat:accessURL'."
+                    )
+        return v
 
 
 class StoreOrderResponse(BaseModel):
