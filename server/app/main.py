@@ -9,7 +9,6 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.logging_config import setup_logging
 
-from . import example, items
 from .database import RedisDatabase
 from .rest_api.routes import health_check, orders
 from .settings import get_settings
@@ -71,5 +70,3 @@ Instrumentator().instrument(app).expose(app)
 
 app.include_router(health_check.routes.router)
 app.include_router(orders.routes.router)
-app.include_router(example.router)
-app.include_router(items.routes.router)

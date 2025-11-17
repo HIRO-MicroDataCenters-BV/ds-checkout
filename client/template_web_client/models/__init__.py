@@ -15,10 +15,8 @@
 
 
 # import models into model package
-from template_web_client.models.example_response import ExampleResponse
 from template_web_client.models.http_validation_error import HTTPValidationError
 from template_web_client.models.health_check import HealthCheck
-from template_web_client.models.item import Item
 from template_web_client.models.retrieve_order_response import RetrieveOrderResponse
 from template_web_client.models.store_order_request import StoreOrderRequest
 from template_web_client.models.store_order_response import StoreOrderResponse
