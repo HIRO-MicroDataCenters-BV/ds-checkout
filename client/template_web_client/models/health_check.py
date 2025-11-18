@@ -19,7 +19,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,7 +27,7 @@ class HealthCheck(BaseModel):
     """
     HealthCheck
     """ # noqa: E501
-    status: StrictStr
+    status: Optional[StrictStr] = 'OK'
     __properties: ClassVar[List[str]] = ["status"]
 
     model_config = {
@@ -81,7 +81,7 @@ class HealthCheck(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "status": obj.get("status")
+            "status": obj.get("status") if obj.get("status") is not None else 'OK'
         })
         return _obj
 

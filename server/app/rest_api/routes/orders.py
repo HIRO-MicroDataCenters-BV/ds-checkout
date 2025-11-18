@@ -53,6 +53,9 @@ class OrdersRoutes(Routable):
 
             return StoreOrderResponse(order_id=order_id, expires_in_seconds=ttl)
 
+        except HTTPException:
+            # Re-raise HTTPException as-is
+            raise
         except Exception as e:
             logger.error(f"Unexpected error in store_order: {str(e)}")
             raise HTTPException(
@@ -99,6 +102,9 @@ class OrdersRoutes(Routable):
                 )
 
             return RetrieveOrderResponse(order_id=order_id, data=data)
+        except HTTPException:
+            # Re-raise HTTPException as-is
+            raise
         except Exception as e:
             logger.error(f"Unexpected error in retrieve_order: {str(e)}")
             raise HTTPException(

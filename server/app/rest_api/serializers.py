@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 import json
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.settings import get_settings
 
@@ -11,7 +11,7 @@ MAX_PAYLOAD_SIZE_BYTES = settings.MAX_PAYLOAD_SIZE_BYTES
 
 
 class HealthCheck(BaseModel):
-    status: str = Field(examples=["OK"])
+    status: str = Field(default="OK", examples=["OK"])
 
 
 class StoreOrderRequest(BaseModel):
@@ -19,7 +19,8 @@ class StoreOrderRequest(BaseModel):
 
     data: Dict[str, Any] = Field(..., description="JSON-LD order data")
 
-    @validator("data")
+    @field_validator("data")
+    @classmethod
     def validate_data(cls, v):
         if not v:
             raise ValueError("Order data cannot be empty")
@@ -29,9 +30,13 @@ class StoreOrderRequest(BaseModel):
                 f"Payload size ({data_size} bytes) exceeds maximum allowed "
                 f"({MAX_PAYLOAD_SIZE_BYTES} bytes)"
             )
-        datasets = v.get("dcat:dataset", [])
+        datasets = v.get("dcat:dataset")
+        if datasets is None:
+            raise ValueError("'dcat:dataset' is required.")
         if not isinstance(datasets, list):
             raise ValueError("'dcat:dataset' must be a list.")
+        if not datasets:
+            raise ValueError("'dcat:dataset' cannot be empty.")
         for idx, dataset in enumerate(datasets):
             if "region" not in dataset:
                 raise ValueError(f"Dataset at index {idx} missing 'region'.")

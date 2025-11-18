@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**status** | **str** |  | 
+**status** | **str** |  | [optional] [default to 'OK']
 
 ## Example
 

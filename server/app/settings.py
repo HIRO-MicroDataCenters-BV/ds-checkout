@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     )
 
     database: Database = Database()
+    test_database: Database = Database(db_number=15)
 
 
 def get_settings() -> Settings:

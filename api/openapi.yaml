@@ -118,11 +118,10 @@ components:
         status:
           type: string
           title: Status
+          default: OK
           examples:
           - OK
       type: object
-      required:
-      - status
       title: HealthCheck
     RetrieveOrderResponse:
       properties:
