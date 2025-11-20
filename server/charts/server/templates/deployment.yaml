@@ -53,7 +53,13 @@ spec:
           env:
             {{- range .Values.env }}
             - name: {{ .name }}
+              {{- if .value }}
               value: {{ .value | quote }}
+              {{- end }}
+              {{- if .valueFrom }}
+              valueFrom:
+                {{- toYaml .valueFrom | nindent 16 }}
+              {{- end }}
             {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
