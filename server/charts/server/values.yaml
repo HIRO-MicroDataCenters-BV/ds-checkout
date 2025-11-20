@@ -76,10 +76,7 @@ env:
   - name: DATABASE__DB_NUMBER
     value: "0"
   - name: DATABASE__USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: redis-credentials
-        key: username
+    value: ""
   - name: DATABASE__PASSWORD
     valueFrom:
       secretKeyRef:
@@ -95,10 +92,7 @@ env:
   - name: TEST_DATABASE__DB_NUMBER
     value: "15"
   - name: TEST_DATABASE__USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: redis-credentials
-        key: username
+    value: ""
   - name: TEST_DATABASE__PASSWORD
     valueFrom:
       secretKeyRef:
