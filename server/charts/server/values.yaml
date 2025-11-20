@@ -70,28 +70,40 @@ env:
   - name: DATABASE__PROTOCOL
     value: "redis"
   - name: DATABASE__HOST
-    value: "localhost"
+    value: "redis-repository"
   - name: DATABASE__PORT
     value: "6379"
   - name: DATABASE__DB_NUMBER
     value: "0"
   - name: DATABASE__USERNAME
-    value: ""
+    valueFrom:
+      secretKeyRef:
+        name: redis-credentials
+        key: username
   - name: DATABASE__PASSWORD
-    value: ""
+    valueFrom:
+      secretKeyRef:
+        name: redis-credentials
+        key: password
 
   - name: TEST_DATABASE__PROTOCOL
     value: "redis"
   - name: TEST_DATABASE__HOST
-    value: "localhost"
+    value: "redis-repository"
   - name: TEST_DATABASE__PORT
     value: "6379"
   - name: TEST_DATABASE__DB_NUMBER
     value: "15"
   - name: TEST_DATABASE__USERNAME
-    value: ""
+    valueFrom:
+      secretKeyRef:
+        name: redis-credentials
+        key: username
   - name: TEST_DATABASE__PASSWORD
-    value: ""
+    valueFrom:
+      secretKeyRef:
+        name: redis-credentials
+        key: password
 
 resources:
   requests:
