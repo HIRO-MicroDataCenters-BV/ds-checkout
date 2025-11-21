@@ -101,7 +101,10 @@ class OrdersRoutes(Routable):
                     detail=f"Order {order_id} not found or expired",
                 )
 
-            return RetrieveOrderResponse(order_id=order_id, data=data)
+            # Extract the datasets from the processed data structure
+            datasets = data.get("data", []) if isinstance(data, dict) else []
+
+            return RetrieveOrderResponse(order_id=order_id, data=datasets)
         except HTTPException:
             # Re-raise HTTPException as-is
             raise

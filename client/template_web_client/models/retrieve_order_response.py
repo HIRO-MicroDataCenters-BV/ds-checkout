@@ -18,7 +18,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, StrictStr
+from pydantic import BaseModel, Field, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,7 +28,7 @@ class RetrieveOrderResponse(BaseModel):
     Response model for retrieve operation
     """ # noqa: E501
     order_id: StrictStr
-    data: Dict[str, Any]
+    data: List[Dict[str, Any]] = Field(description="Array of dataset objects")
     __properties: ClassVar[List[str]] = ["order_id", "data"]
 
     model_config = {
@@ -83,6 +83,7 @@ class RetrieveOrderResponse(BaseModel):
 
         _obj = cls.model_validate({
             "order_id": obj.get("order_id"),
+            "data": obj.get("data")
         })
         return _obj
 

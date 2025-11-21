@@ -66,6 +66,9 @@ env:
     value: "true"
   - name: MAX_PAYLOAD_SIZE_BYTES
     value: "10485760" # 10 MB
+  - name:  DS_CONNECTOR_BASE_URL
+    value: "https://ds-connector.{region}.nextgen.hiro-develop.nl/distribution-content"
+
 
   - name: DATABASE__PROTOCOL
     value: "redis"

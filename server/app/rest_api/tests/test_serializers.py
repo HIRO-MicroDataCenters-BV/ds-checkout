@@ -258,21 +258,21 @@ class TestRetrieveOrderResponseSerializer:
 
     @pytest.fixture
     def sample_retrieved_data(self):
-        """Sample retrieved order data."""
-        return {
-            "dcat:dataset": [
-                {
-                    "region": "EU",
-                    "dcat:distribution": [
-                        {
-                            "dcat:accessURL": "https://example.com/data.csv",
-                            "dcat:mediaType": "text/csv",
-                        }
-                    ],
-                }
-            ],
-            "metadata": {"timestamp": "2023-01-01T00:00:00Z"},
-        }
+        """Sample retrieved order data - datasets array that the API returns."""
+        return [
+            {
+                "region": "EU",
+                "distribution": [
+                    {
+                        "accessURL": (
+                            "https://ds-connector.EU.nextgen.hiro-develop.nl/"
+                            "distribution-content/https/example.com/data.csv/chunk"
+                        ),
+                        "mediaType": "text/csv",
+                    }
+                ],
+            }
+        ]
 
     def test_retrieve_order_response_valid(self, sample_retrieved_data):
         """Test RetrieveOrderResponse with valid data."""
@@ -295,35 +295,36 @@ class TestRetrieveOrderResponseSerializer:
             )
 
     def test_retrieve_order_response_empty_data(self):
-        """Test RetrieveOrderResponse with empty data dict."""
-        response = RetrieveOrderResponse(order_id="test-order-123", data={})
+        """Test RetrieveOrderResponse with empty data list."""
+        response = RetrieveOrderResponse(order_id="test-order-123", data=[])
         assert response.order_id == "test-order-123"
-        assert response.data == {}
+        assert response.data == []
 
     def test_retrieve_order_response_complex_data(self):
         """Test RetrieveOrderResponse with complex data structure."""
-        complex_data = {
-            "dcat:dataset": [
-                {
-                    "region": "Global",
-                    "dcat:distribution": [
-                        {
-                            "dcat:accessURL": "https://api.example.com/data",
-                            "dcat:mediaType": "application/json",
-                            "authentication": {
-                                "type": "bearer",
-                                "token_url": "https://auth.example.com/token",
-                            },
-                        }
-                    ],
-                }
-            ],
-            "processing": {
-                "transformations": ["normalize", "aggregate"],
-                "output_format": "parquet",
-            },
-            "tracking": {"request_id": "req-123", "user_session": "session-456"},
-        }
+        complex_data = [
+            {
+                "region": "Global",
+                "distribution": [
+                    {
+                        "accessURL": (
+                            "https://ds-connector.Global.nextgen.hiro-develop.nl/"
+                            "distribution-content/https/api.example.com/data/chunk"
+                        ),
+                        "mediaType": "application/json",
+                        "authentication": {
+                            "type": "bearer",
+                            "token_url": "https://auth.example.com/token",
+                        },
+                    }
+                ],
+                "processing": {
+                    "transformations": ["normalize", "aggregate"],
+                    "output_format": "parquet",
+                },
+                "tracking": {"request_id": "req-123", "user_session": "session-456"},
+            }
+        ]
 
         response = RetrieveOrderResponse(
             order_id="complex-order-789", data=complex_data
@@ -360,7 +361,7 @@ class TestSerializerIntegration:
 
     def test_store_and_retrieve_order_flow(self):
         """Test complete flow from store request to retrieve response."""
-        # Original order data
+        # Original order data (what gets stored)
         original_data = {
             "dcat:dataset": [
                 {
@@ -384,14 +385,30 @@ class TestSerializerIntegration:
             order_id="test-order-123", expires_in_seconds=3600
         )
 
-        # 3. Create retrieve response with same data
+        # 3. Create retrieve response with transformed data (what the API returns)
+        # This simulates what happens after JSON-LD transformation and URL mapping
+        transformed_datasets = [
+            {
+                "region": "EU",
+                "distribution": [
+                    {
+                        "accessURL": (
+                            "https://ds-connector.EU.nextgen.hiro-develop.nl/"
+                            "distribution-content/https/example.com/data.csv/chunk"
+                        ),
+                        "mediaType": "text/csv",
+                    }
+                ],
+            }
+        ]
+
         retrieve_response = RetrieveOrderResponse(
-            order_id=store_response.order_id, data=store_request.data
+            order_id=store_response.order_id, data=transformed_datasets
         )
 
         # Verify data consistency
         assert retrieve_response.order_id == store_response.order_id
-        assert retrieve_response.data == original_data
+        assert retrieve_response.data == transformed_datasets
 
     def test_serialization_round_trip(self):
         """Test serialization and deserialization round trip."""
@@ -417,12 +434,27 @@ class TestSerializerIntegration:
 
         assert store_parsed.data == original_data
 
-        # Retrieve response
+        # Retrieve response with transformed data (what the API actually returns)
+        transformed_datasets = [
+            {
+                "region": "US",
+                "distribution": [
+                    {
+                        "accessURL": (
+                            "https://ds-connector.US.nextgen.hiro-develop.nl/"
+                            "distribution-content/https/data.gov/dataset.json/chunk"
+                        ),
+                        "mediaType": "application/json",
+                    }
+                ],
+            }
+        ]
+
         retrieve_response = RetrieveOrderResponse(
-            order_id="test-123", data=original_data
+            order_id="test-123", data=transformed_datasets
         )
         retrieve_json = retrieve_response.model_dump_json()
         retrieve_parsed = RetrieveOrderResponse.model_validate_json(retrieve_json)
 
-        assert retrieve_parsed.data == original_data
+        assert retrieve_parsed.data == transformed_datasets
         assert retrieve_parsed.order_id == "test-123"

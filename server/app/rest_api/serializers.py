@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import json
 
@@ -66,4 +66,4 @@ class RetrieveOrderResponse(BaseModel):
     """Response model for retrieve operation"""
 
     order_id: str
-    data: Dict[str, Any]
+    data: List[Dict[str, Any]] = Field(..., description="Array of dataset objects")

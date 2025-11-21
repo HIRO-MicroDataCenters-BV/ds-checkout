@@ -129,9 +129,12 @@ components:
           type: string
           title: Order Id
         data:
-          additionalProperties: true
-          type: object
+          items:
+            additionalProperties: true
+            type: object
+          type: array
           title: Data
+          description: Array of dataset objects
       type: object
       required:
       - order_id

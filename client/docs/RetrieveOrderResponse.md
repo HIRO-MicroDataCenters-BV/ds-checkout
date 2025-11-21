@@ -7,7 +7,7 @@ Response model for retrieve operation
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **order_id** | **str** |  | 
-**data** | **Dict[str, object]** |  | 
+**data** | **List[Dict[str, object]]** | Array of dataset objects | 
 
 ## Example
 

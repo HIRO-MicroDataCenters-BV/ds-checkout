@@ -139,7 +139,47 @@ class TestOrdersRoutes:
         """Test successfully retrieving an order."""
         # Setup
         order_id = str(uuid.uuid4())
-        mock_usecases.retrieve_order.return_value = sample_order_data
+
+        # Mock the usecase to return transformed data structure
+        # (what the usecase actually returns)
+        transformed_data = {
+            "data": [
+                {
+                    "region": "EU",
+                    "distribution": [
+                        {
+                            "accessURL": (
+                                "https://ds-connector.EU.nextgen.hiro-develop.nl/"
+                                "distribution-content/https/example.com/data1.csv/chunk"
+                            ),
+                            "mediaType": "text/csv",
+                        },
+                        {
+                            "accessURL": (
+                                "https://ds-connector.EU.nextgen.hiro-develop.nl/"
+                                "distribution-content/https/example.com/"
+                                "data2.json/chunk"
+                            ),
+                            "mediaType": "application/json",
+                        },
+                    ],
+                },
+                {
+                    "region": "US",
+                    "distribution": [
+                        {
+                            "accessURL": (
+                                "https://ds-connector.US.nextgen.hiro-develop.nl/"
+                                "distribution-content/https/example.com/data3.xml/chunk"
+                            ),
+                            "mediaType": "application/xml",
+                        },
+                    ],
+                },
+            ],
+            "metadata": {"created": "2023-01-01T00:00:00Z", "version": "1.0"},
+        }
+        mock_usecases.retrieve_order.return_value = transformed_data
 
         routes = OrdersRoutes()
         app = FastAPI()
@@ -154,7 +194,8 @@ class TestOrdersRoutes:
         assert response.status_code == status.HTTP_200_OK
         response_data = response.json()
         assert response_data["order_id"] == order_id
-        assert response_data["data"] == sample_order_data
+        # The API should return only the data array, not the whole transformed structure
+        assert response_data["data"] == transformed_data["data"]
 
         # Verify usecase was called correctly
         mock_usecases.retrieve_order.assert_called_once_with(order_id)

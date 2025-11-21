@@ -109,14 +109,17 @@ class TestOrderUsecases:
         result = await usecases.retrieve_order(order_id)
 
         # Verify - the result should be transformed from JSON-LD to plain JSON
-        # The transformation removes 'dcat:' prefixes, so dcat:dataset becomes dataset
+        # The transformation puts datasets into a "data" array and applies URL mapping
         expected_transformed = {
-            "dataset": [
+            "data": [
                 {
                     "region": "EU",
                     "distribution": [
                         {
-                            "accessURL": "https://example.com/data1.csv",
+                            "accessURL": (
+                                "https://ds-connector.EU.nextgen.hiro-develop.nl/"
+                                "distribution-content/https/example.com/data1.csv/chunk"
+                            ),
                             "mediaType": "text/csv",
                         }
                     ],

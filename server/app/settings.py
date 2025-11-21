@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     ORDER_TTL_ENABLED: bool = True
     MAX_PAYLOAD_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB
 
+    # URL mapping configuration
+    DS_CONNECTOR_BASE_URL: str = (
+        "https://ds-connector.{region}.nextgen.hiro-develop.nl/distribution-content"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
