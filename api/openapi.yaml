@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
-  title: Template web service
-  description: This is a template of a web service
+  title: Checkout service
+  description: This is a checkout service for temporary storage of orders
   contact:
     name: HIRO-MicroDataCenters
     email: all-hiro@hiro-microdatacenters.nl

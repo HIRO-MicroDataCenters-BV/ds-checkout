@@ -3,9 +3,9 @@
 # flake8: noqa
 
 """
-    Template web service
+    Checkout service
 
-    This is a template of a web service
+    This is a checkout service for temporary storage of orders
 
     The version of the OpenAPI document: 0.1.0
     Contact: all-hiro@hiro-microdatacenters.nl

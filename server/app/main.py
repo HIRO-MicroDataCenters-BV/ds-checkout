@@ -29,9 +29,9 @@ class CustomFastAPI(FastAPI):
         if self.openapi_schema:
             return self.openapi_schema
         openapi_schema = get_openapi(
-            title="Template web service",
+            title="Checkout service",
             version="0.0.0",
-            description="This is a template of a web service",
+            description="This is a checkout service for temporary storage of orders",
             contact={
                 "name": "HIRO-MicroDataCenters",
                 "email": "all-hiro@hiro-microdatacenters.nl",

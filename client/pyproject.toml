@@ -5,11 +5,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "template_web_client"
 version = "0.1.0"
-description = "Client for Template web service"
+description = "Client for Checkout service"
 authors = ["HIRO-MicroDataCenters <all-hiro@hiro-microdatacenters.nl>"]
 license = "MIT"
 readme = "README.md"
-keywords = ["OpenAPI", "OpenAPI-Generator", "Template web service"]
+keywords = ["OpenAPI", "OpenAPI-Generator", "Checkout service"]
 include = ["template_web_client/py.typed"]
 
 [tool.poetry.dependencies]
