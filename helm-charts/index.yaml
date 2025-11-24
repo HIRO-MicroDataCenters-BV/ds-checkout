@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   ds-checkout:
   - apiVersion: v2
+    appVersion: 0.1.0-dev.16.checkout-endpoin.fd4e538c
+    created: "2025-11-24T15:37:30.152050238Z"
+    description: Web server
+    digest: 0eb0a3543b17a2473ace194747d00e1b5850946da231bd2aa70d70abdbe43721
+    name: ds-checkout
+    type: application
+    urls:
+    - https://HIRO-MicroDataCenters-BV.github.io/ds-checkout/helm-charts/ds-checkout-0.1.0-dev.16.checkout-endpoin.fd4e538c.tgz
+    version: 0.1.0-dev.16.checkout-endpoin.fd4e538c
+  - apiVersion: v2
     appVersion: 0.1.0-dev.15.checkout-endpoin.d17ea327
     created: "2025-11-24T14:55:33.226103846Z"
     description: Web server
@@ -162,4 +172,4 @@ entries:
     urls:
     - https://HIRO-MicroDataCenters-BV.github.io/template-web-service/helm-charts/server-0.1.0-dev.3.feature-github-d.f40b5358.tgz
     version: 0.1.0-dev.3.feature-github-d.f40b5358
-generated: "2025-11-24T14:55:33.225339435Z"
+generated: "2025-11-24T15:37:30.151331655Z"
