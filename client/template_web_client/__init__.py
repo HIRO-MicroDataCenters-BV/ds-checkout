@@ -3,9 +3,9 @@
 # flake8: noqa
 
 """
-    Template web service
+    Checkout service
 
-    This is a template of a web service
+    This is a checkout service for temporary storage of orders
 
     The version of the OpenAPI document: 0.1.0
     Contact: all-hiro@hiro-microdatacenters.nl
@@ -18,8 +18,8 @@
 __version__ = "1.0.0"
 
 # import apis into sdk package
+from template_web_client.api.orders_api import OrdersApi
 from template_web_client.api.default_api import DefaultApi
-from template_web_client.api.items_api import ItemsApi
 
 # import ApiClient
 from template_web_client.api_response import ApiResponse
@@ -33,8 +33,10 @@ from template_web_client.exceptions import ApiAttributeError
 from template_web_client.exceptions import ApiException
 
 # import models into sdk package
-from template_web_client.models.example_response import ExampleResponse
 from template_web_client.models.http_validation_error import HTTPValidationError
-from template_web_client.models.item import Item
+from template_web_client.models.health_check import HealthCheck
+from template_web_client.models.retrieve_order_response import RetrieveOrderResponse
+from template_web_client.models.store_order_request import StoreOrderRequest
+from template_web_client.models.store_order_response import StoreOrderResponse
 from template_web_client.models.validation_error import ValidationError
 from template_web_client.models.validation_error_loc_inner import ValidationErrorLocInner
