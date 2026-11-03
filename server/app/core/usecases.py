@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import asyncio
 import json
@@ -82,6 +82,31 @@ class OrderUsecases(IUsecases):
             logger.error(f"Service error retrieving order {order_id}: {str(e)}")
             raise
 
+    async def store_contracts(
+        self, order_id: str, contracts: List[Dict[str, str]], ttl: int
+    ) -> None:
+        """Keep the order's contracts beside it, under their own key.
+
+        They cannot live inside the order itself: retrieve_order runs the
+        stored value through the JSON-LD flattener, which would mangle them. A
+        sibling key with the same TTL means they disappear exactly when the
+        order does.
+        """
+        await self.repository.store(
+            self._contract_key(order_id), {"contracts": contracts}, ttl
+        )
+
+    async def retrieve_contracts(self, order_id: str) -> List[Dict[str, str]]:
+        """The contracts issued for this order (region, jti, token), if held."""
+        stored = await self.repository.retrieve(self._contract_key(order_id))
+        if isinstance(stored, dict) and isinstance(stored.get("contracts"), list):
+            return [c for c in stored["contracts"] if isinstance(c, dict)]
+        return []
+
+    @staticmethod
+    def _contract_key(order_id: str) -> str:
+        return f"{order_id}:contract"
+
     async def delete_order(self, order_id: str) -> bool:
         """
         Delete order by order_id
@@ -91,6 +116,7 @@ class OrderUsecases(IUsecases):
         """
         try:
             result = await self.repository.delete(order_id)
+            await self.repository.delete(self._contract_key(order_id))
             return result
 
         except Exception as e:

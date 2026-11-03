@@ -19,7 +19,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
+from template_web_client.models.order_contract import OrderContract
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,7 +30,8 @@ class RetrieveOrderResponse(BaseModel):
     """ # noqa: E501
     order_id: StrictStr
     data: List[Dict[str, Any]] = Field(description="Array of dataset objects")
-    __properties: ClassVar[List[str]] = ["order_id", "data"]
+    contracts: Optional[List[OrderContract]] = Field(default=None, description="Contracts issued for this order, held as long as the order is.")
+    __properties: ClassVar[List[str]] = ["order_id", "data", "contracts"]
 
     model_config = {
         "populate_by_name": True,
@@ -70,6 +72,13 @@ class RetrieveOrderResponse(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in contracts (list)
+        _items = []
+        if self.contracts:
+            for _item in self.contracts:
+                if _item:
+                    _items.append(_item.to_dict())
+            _dict['contracts'] = _items
         return _dict
 
     @classmethod
@@ -83,7 +92,8 @@ class RetrieveOrderResponse(BaseModel):
 
         _obj = cls.model_validate({
             "order_id": obj.get("order_id"),
-            "data": obj.get("data")
+            "data": obj.get("data"),
+            "contracts": [OrderContract.from_dict(_item) for _item in obj["contracts"]] if obj.get("contracts") is not None else None
         })
         return _obj
 

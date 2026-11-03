@@ -1,7 +1,9 @@
 README.md
+docs/Authorization.md
 docs/DefaultApi.md
 docs/HTTPValidationError.md
 docs/HealthCheck.md
+docs/OrderContract.md
 docs/OrdersApi.md
 docs/RetrieveOrderResponse.md
 docs/StoreOrderRequest.md
@@ -19,8 +21,10 @@ template_web_client/api_response.py
 template_web_client/configuration.py
 template_web_client/exceptions.py
 template_web_client/models/__init__.py
+template_web_client/models/authorization.py
 template_web_client/models/health_check.py
 template_web_client/models/http_validation_error.py
+template_web_client/models/order_contract.py
 template_web_client/models/retrieve_order_response.py
 template_web_client/models/store_order_request.py
 template_web_client/models/store_order_response.py

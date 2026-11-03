@@ -168,9 +168,12 @@ class TestOrderUsecases:
         # Execute
         result = await usecases.delete_order(order_id)
 
-        # Verify
+        # Verify: the order and the contracts kept beside it
         assert result is True
-        mock_repository.delete.assert_called_once_with(order_id)
+        assert [c.args for c in mock_repository.delete.call_args_list] == [
+            (order_id,),
+            (f"{order_id}:contract",),
+        ]
 
     @pytest.mark.asyncio
     async def test_delete_order_not_found(self, usecases, mock_repository):
@@ -182,9 +185,9 @@ class TestOrderUsecases:
         # Execute
         result = await usecases.delete_order(order_id)
 
-        # Verify
+        # Verify: the order's result is what counts; its contracts key goes too
         assert result is False
-        mock_repository.delete.assert_called_once_with(order_id)
+        assert mock_repository.delete.call_args_list[0].args == (order_id,)
 
     @pytest.mark.asyncio
     async def test_delete_order_repository_exception(self, usecases, mock_repository):

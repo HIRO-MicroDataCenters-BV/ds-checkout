@@ -55,11 +55,27 @@ class StoreOrderRequest(BaseModel):
         return v
 
 
+class OrderContract(BaseModel):
+    """A contract issued for (part of) an order by one region's generator."""
+
+    region: str = Field(..., description="Region whose datasets it covers, e.g. hus")
+    jti: str = Field(..., description="Contract id, as listed in the Clearing House")
+    token: str = Field(..., description="The signed contract (VC-JWT)")
+
+
 class StoreOrderResponse(BaseModel):
     """Response model for store operation"""
 
     order_id: str = Field(..., description="UUID of the stored order")
     expires_in_seconds: int = Field(..., description="TTL in seconds")
+    contracts: List[OrderContract] = Field(
+        default_factory=list,
+        description=(
+            "Contracts issued for this order, one per region with a contract "
+            "generator. Empty when none could be issued; the order is stored "
+            "either way."
+        ),
+    )
 
 
 class RetrieveOrderResponse(BaseModel):
@@ -67,3 +83,7 @@ class RetrieveOrderResponse(BaseModel):
 
     order_id: str
     data: List[Dict[str, Any]] = Field(..., description="Array of dataset objects")
+    contracts: List[OrderContract] = Field(
+        default_factory=list,
+        description="Contracts issued for this order, held as long as the order is.",
+    )

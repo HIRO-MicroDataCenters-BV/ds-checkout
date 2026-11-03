@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **order_id** | **str** | UUID of the stored order | 
 **expires_in_seconds** | **int** | TTL in seconds | 
+**contracts** | [**List[OrderContract]**](OrderContract.md) | Contracts issued for this order, one per region with a contract generator. Empty when none could be issued; the order is stored either way. | [optional] 
 
 ## Example
 

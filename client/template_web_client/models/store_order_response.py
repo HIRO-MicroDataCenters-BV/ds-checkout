@@ -19,7 +19,8 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
+from template_web_client.models.order_contract import OrderContract
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,7 +30,8 @@ class StoreOrderResponse(BaseModel):
     """ # noqa: E501
     order_id: StrictStr = Field(description="UUID of the stored order")
     expires_in_seconds: StrictInt = Field(description="TTL in seconds")
-    __properties: ClassVar[List[str]] = ["order_id", "expires_in_seconds"]
+    contracts: Optional[List[OrderContract]] = Field(default=None, description="Contracts issued for this order, one per region with a contract generator. Empty when none could be issued; the order is stored either way.")
+    __properties: ClassVar[List[str]] = ["order_id", "expires_in_seconds", "contracts"]
 
     model_config = {
         "populate_by_name": True,
@@ -70,6 +72,13 @@ class StoreOrderResponse(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in contracts (list)
+        _items = []
+        if self.contracts:
+            for _item in self.contracts:
+                if _item:
+                    _items.append(_item.to_dict())
+            _dict['contracts'] = _items
         return _dict
 
     @classmethod
@@ -83,7 +92,8 @@ class StoreOrderResponse(BaseModel):
 
         _obj = cls.model_validate({
             "order_id": obj.get("order_id"),
-            "expires_in_seconds": obj.get("expires_in_seconds")
+            "expires_in_seconds": obj.get("expires_in_seconds"),
+            "contracts": [OrderContract.from_dict(_item) for _item in obj["contracts"]] if obj.get("contracts") is not None else None
         })
         return _obj
 

@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **order_id** | **str** |  | 
 **data** | **List[Dict[str, object]]** | Array of dataset objects | 
+**contracts** | [**List[OrderContract]**](OrderContract.md) | Contracts issued for this order, held as long as the order is. | [optional] 
 
 ## Example
 

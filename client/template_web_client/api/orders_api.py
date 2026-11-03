@@ -18,6 +18,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import StrictStr
+from typing import Any, Optional
 from template_web_client.models.retrieve_order_response import RetrieveOrderResponse
 from template_web_client.models.store_order_request import StoreOrderRequest
 from template_web_client.models.store_order_response import StoreOrderResponse
@@ -304,6 +305,7 @@ class OrdersApi:
     def store_order_orders_post(
         self,
         store_order_request: StoreOrderRequest,
+        authorization: Optional[Any] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -319,10 +321,12 @@ class OrdersApi:
     ) -> StoreOrderResponse:
         """Store checkout order
 
-        Store checkout order temporarily  - Accepts JSON-LD format - Generates UUID - Stores in Redis with TTL - Returns order_id for retrieval
+        Store checkout order temporarily  - Accepts JSON-LD format - Generates UUID - Stores in Redis with TTL - Asks each region's contract generator for a contract covering that   region's datasets (CONTRACT_GENERATORS); best effort - Returns order_id and the contracts issued  The consumer named in a contract comes from the ds-login JWT in `Authorization: Bearer …` (its email, else keri:<AID>), which the website passes on. The token is read, not verified, until tokens are checked after the demo.
 
         :param store_order_request: (required)
         :type store_order_request: StoreOrderRequest
+        :param authorization:
+        :type authorization: Authorization
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -347,6 +351,7 @@ class OrdersApi:
 
         _param = self._store_order_orders_post_serialize(
             store_order_request=store_order_request,
+            authorization=authorization,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -372,6 +377,7 @@ class OrdersApi:
     def store_order_orders_post_with_http_info(
         self,
         store_order_request: StoreOrderRequest,
+        authorization: Optional[Any] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -387,10 +393,12 @@ class OrdersApi:
     ) -> ApiResponse[StoreOrderResponse]:
         """Store checkout order
 
-        Store checkout order temporarily  - Accepts JSON-LD format - Generates UUID - Stores in Redis with TTL - Returns order_id for retrieval
+        Store checkout order temporarily  - Accepts JSON-LD format - Generates UUID - Stores in Redis with TTL - Asks each region's contract generator for a contract covering that   region's datasets (CONTRACT_GENERATORS); best effort - Returns order_id and the contracts issued  The consumer named in a contract comes from the ds-login JWT in `Authorization: Bearer …` (its email, else keri:<AID>), which the website passes on. The token is read, not verified, until tokens are checked after the demo.
 
         :param store_order_request: (required)
         :type store_order_request: StoreOrderRequest
+        :param authorization:
+        :type authorization: Authorization
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -415,6 +423,7 @@ class OrdersApi:
 
         _param = self._store_order_orders_post_serialize(
             store_order_request=store_order_request,
+            authorization=authorization,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -440,6 +449,7 @@ class OrdersApi:
     def store_order_orders_post_without_preload_content(
         self,
         store_order_request: StoreOrderRequest,
+        authorization: Optional[Any] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -455,10 +465,12 @@ class OrdersApi:
     ) -> RESTResponseType:
         """Store checkout order
 
-        Store checkout order temporarily  - Accepts JSON-LD format - Generates UUID - Stores in Redis with TTL - Returns order_id for retrieval
+        Store checkout order temporarily  - Accepts JSON-LD format - Generates UUID - Stores in Redis with TTL - Asks each region's contract generator for a contract covering that   region's datasets (CONTRACT_GENERATORS); best effort - Returns order_id and the contracts issued  The consumer named in a contract comes from the ds-login JWT in `Authorization: Bearer …` (its email, else keri:<AID>), which the website passes on. The token is read, not verified, until tokens are checked after the demo.
 
         :param store_order_request: (required)
         :type store_order_request: StoreOrderRequest
+        :param authorization:
+        :type authorization: Authorization
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -483,6 +495,7 @@ class OrdersApi:
 
         _param = self._store_order_orders_post_serialize(
             store_order_request=store_order_request,
+            authorization=authorization,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -503,6 +516,7 @@ class OrdersApi:
     def _store_order_orders_post_serialize(
         self,
         store_order_request,
+        authorization,
         _request_auth,
         _content_type,
         _headers,
@@ -524,6 +538,8 @@ class OrdersApi:
         # process the path parameters
         # process the query parameters
         # process the header parameters
+        if authorization is not None:
+            _header_params['Authorization'] = authorization
         # process the form parameters
         # process the body parameter
         if store_order_request is not None:
