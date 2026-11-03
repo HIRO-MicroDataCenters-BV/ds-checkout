@@ -33,5 +33,4 @@ template_web_client/models/validation_error_loc_inner.py
 template_web_client/py.typed
 template_web_client/rest.py
 test/__init__.py
-test/test_authorization.py
 tox.ini
