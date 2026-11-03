@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
-  title: Template web service
-  description: This is a template of a web service
+  title: Checkout service
+  description: This is a checkout service for temporary storage of orders
   contact:
     name: HIRO-MicroDataCenters
     email: all-hiro@hiro-microdatacenters.nl
@@ -21,46 +21,39 @@ paths:
           content:
             application/json:
               schema: {}
-  /:
+  /health-check/:
     get:
-      summary: Example endpoint
-      description: Example endpoint that returns test data
-      operationId: example__get
+      summary: Health check
+      description: Returns a 200 status code if the service is up and running
+      operationId: health_check
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExampleResponse'
-  /item/:
-    get:
-      tags:
-      - items
-      summary: Read all items
-      description: Read all items from the storage
-      operationId: items__read_all
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/Item'
-                type: array
-                title: Response Items  Read All
+                $ref: '#/components/schemas/HealthCheck'
+  /orders:
     post:
       tags:
-      - items
-      summary: Create an item
-      description: Create a new item in the storage
-      operationId: items__create
+      - Orders
+      summary: Store checkout order
+      description: 'Store checkout order temporarily
+
+
+        - Accepts JSON-LD format
+
+        - Generates UUID
+
+        - Stores in Redis with TTL
+
+        - Returns order_id for retrieval'
+      operationId: store_order_orders_post
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Item'
+              $ref: '#/components/schemas/StoreOrderRequest'
         required: true
       responses:
         '201':
@@ -68,88 +61,41 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/StoreOrderResponse'
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /item/{id}/:
+  /orders/{order_id}:
     get:
       tags:
-      - items
-      summary: Read an item
-      description: Read item from the storage
-      operationId: items__read_item
+      - Orders
+      summary: Retrieve checkout order
+      description: 'Retrieve checkout order by UUID
+
+
+        - Retrieves from Redis
+
+        - Transforms JSON-LD to plain JSON
+
+        - Returns order data'
+      operationId: retrieve_order_orders__order_id__get
       parameters:
-      - name: id
+      - name: order_id
         in: path
         required: true
         schema:
-          type: integer
-          title: Id
+          type: string
+          title: Order Id
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    put:
-      tags:
-      - items
-      summary: Update an item
-      description: Update an item in the storage
-      operationId: items__update_item
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          title: Id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Item'
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Item'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    delete:
-      tags:
-      - items
-      summary: Delete an item
-      description: Delete an item from the storage
-      operationId: items__delete_item
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          title: Id
-      responses:
-        '204':
-          description: Successful Response
+                $ref: '#/components/schemas/RetrieveOrderResponse'
         '422':
           description: Validation Error
           content:
@@ -158,18 +104,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ExampleResponse:
-      properties:
-        value:
-          type: string
-          title: Value
-      type: object
-      required:
-      - value
-      title: ExampleResponse
-      description: Example data
-      examples:
-      - value: test value
     HTTPValidationError:
       properties:
         detail:
@@ -179,22 +113,62 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    Item:
+    HealthCheck:
       properties:
-        id:
-          type: integer
-          title: Id
-        name:
+        status:
           type: string
-          title: Name
+          title: Status
+          default: OK
+          examples:
+          - OK
+      type: object
+      title: HealthCheck
+    RetrieveOrderResponse:
+      properties:
+        order_id:
+          type: string
+          title: Order Id
+        data:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Data
+          description: Array of dataset objects
       type: object
       required:
-      - id
-      - name
-      title: Item
-      examples:
-      - id: 1
-        name: test name
+      - order_id
+      - data
+      title: RetrieveOrderResponse
+      description: Response model for retrieve operation
+    StoreOrderRequest:
+      properties:
+        data:
+          additionalProperties: true
+          type: object
+          title: Data
+          description: JSON-LD order data
+      type: object
+      required:
+      - data
+      title: StoreOrderRequest
+      description: Request model for storing checkout order
+    StoreOrderResponse:
+      properties:
+        order_id:
+          type: string
+          title: Order Id
+          description: UUID of the stored order
+        expires_in_seconds:
+          type: integer
+          title: Expires In Seconds
+          description: TTL in seconds
+      type: object
+      required:
+      - order_id
+      - expires_in_seconds
+      title: StoreOrderResponse
+      description: Response model for store operation
     ValidationError:
       properties:
         loc:

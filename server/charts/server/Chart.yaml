@@ -1,6 +1,6 @@
 apiVersion: v2
-name: server
+name: ds-checkout
 description: Web server
 type: application
-version: ""
-appVersion: ""
+version: "0.0.0"
+appVersion: "0.0.0"

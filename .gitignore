@@ -587,3 +587,6 @@ MigrationBackup/
 .helm
 
 .dist
+
+/server/.env
+.env

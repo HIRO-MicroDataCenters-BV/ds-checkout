@@ -48,9 +48,11 @@ make_version() {
     # Docker versions are set starting from the most generic to the most specific
     # so we can take the most generic one and set to the chart values later
     BRANCH_TOKEN=$(echo "${BRANCH//[^a-zA-Z0-9-_.]/-}" | cut -c1-16 | sed -e 's/-$//')
+    # For Helm chart version, replace underscores with hyphens to comply with SemVer
+    BRANCH_TOKEN_CHART="${BRANCH_TOKEN//_/-}"
 
     VERSION_APP="$VERSION_BASE+dev${GIT_COUNT}-${BRANCH_TOKEN}-${SHORT_SHA}"
-    VERSION_CHART="$VERSION_BASE-dev.${GIT_COUNT}.${BRANCH_TOKEN}.${SHORT_SHA}"
+    VERSION_CHART="$VERSION_BASE-dev.${GIT_COUNT}.${BRANCH_TOKEN_CHART}.${SHORT_SHA}"
     VERSION_DOCKER="$VERSION_CHART"
   fi
 
@@ -91,8 +93,8 @@ patch_helm_chart() {
 
   sed -i "s#repository: \"\"#repository: \"$DOCKER_IMAGE_NAME\"#" "${CHART_PATH}/values.yaml"
   sed -i "s#tag: \"\"#tag: \"$DOCKER_IMAGE_TAG\"#" "${CHART_PATH}/values.yaml"
-  sed -i "s#version: \"\"#version: \"$VERSION_CHART\"#" "${CHART_PATH}/Chart.yaml"
-  sed -i "s#appVersion: \"\"#appVersion: \"$VERSION_CHART\"#" "${CHART_PATH}/Chart.yaml"
+  sed -i "s#version: \"0.0.0\"#version: \"$VERSION_CHART\"#" "${CHART_PATH}/Chart.yaml"
+  sed -i "s#appVersion: \"0.0.0\"#appVersion: \"$VERSION_CHART\"#" "${CHART_PATH}/Chart.yaml"
 }
 
 main() {
