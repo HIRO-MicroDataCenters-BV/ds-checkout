@@ -33,8 +33,10 @@ from template_web_client.exceptions import ApiAttributeError
 from template_web_client.exceptions import ApiException
 
 # import models into sdk package
+from template_web_client.models.authorization import Authorization
 from template_web_client.models.http_validation_error import HTTPValidationError
 from template_web_client.models.health_check import HealthCheck
+from template_web_client.models.order_contract import OrderContract
 from template_web_client.models.retrieve_order_response import RetrieveOrderResponse
 from template_web_client.models.store_order_request import StoreOrderRequest
 from template_web_client.models.store_order_response import StoreOrderResponse

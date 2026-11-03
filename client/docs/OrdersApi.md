@@ -78,11 +78,11 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **store_order_orders_post**
-> StoreOrderResponse store_order_orders_post(store_order_request)
+> StoreOrderResponse store_order_orders_post(store_order_request, authorization=authorization)
 
 Store checkout order
 
-Store checkout order temporarily  - Accepts JSON-LD format - Generates UUID - Stores in Redis with TTL - Returns order_id for retrieval
+Store checkout order temporarily  - Accepts JSON-LD format - Generates UUID - Stores in Redis with TTL - Asks each region's contract generator for a contract covering that   region's datasets (CONTRACT_GENERATORS); best effort - Returns order_id and the contracts issued  The consumer named in a contract comes from the ds-login JWT in `Authorization: Bearer …` (its email, else keri:<AID>), which the website passes on. The token is read, not verified, until tokens are checked after the demo.
 
 ### Example
 
@@ -106,10 +106,11 @@ with template_web_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = template_web_client.OrdersApi(api_client)
     store_order_request = template_web_client.StoreOrderRequest() # StoreOrderRequest | 
+    authorization = template_web_client.Authorization() # Authorization |  (optional)
 
     try:
         # Store checkout order
-        api_response = api_instance.store_order_orders_post(store_order_request)
+        api_response = api_instance.store_order_orders_post(store_order_request, authorization=authorization)
         print("The response of OrdersApi->store_order_orders_post:\n")
         pprint(api_response)
     except Exception as e:
@@ -124,6 +125,7 @@ with template_web_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **store_order_request** | [**StoreOrderRequest**](StoreOrderRequest.md)|  | 
+ **authorization** | [**Authorization**](.md)|  | [optional] 
 
 ### Return type
 

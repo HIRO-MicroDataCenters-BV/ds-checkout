@@ -38,23 +38,29 @@ paths:
       tags:
       - Orders
       summary: Store checkout order
-      description: 'Store checkout order temporarily
-
-
-        - Accepts JSON-LD format
-
-        - Generates UUID
-
-        - Stores in Redis with TTL
-
-        - Returns order_id for retrieval'
+      description: "Store checkout order temporarily\n\n- Accepts JSON-LD format\n\
+        - Generates UUID\n- Stores in Redis with TTL\n- Asks each region's contract\
+        \ generator for a contract covering that\n  region's datasets (CONTRACT_GENERATORS);\
+        \ best effort\n- Returns order_id and the contracts issued\n\nThe consumer\
+        \ named in a contract comes from the ds-login JWT in\n`Authorization: Bearer\
+        \ \u2026` (its email, else keri:<AID>), which the\nwebsite passes on. The\
+        \ token is read, not verified, until tokens are\nchecked after the demo."
       operationId: store_order_orders_post
+      parameters:
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StoreOrderRequest'
-        required: true
       responses:
         '201':
           description: Successful Response
@@ -123,6 +129,27 @@ components:
           - OK
       type: object
       title: HealthCheck
+    OrderContract:
+      properties:
+        region:
+          type: string
+          title: Region
+          description: Region whose datasets it covers, e.g. hus
+        jti:
+          type: string
+          title: Jti
+          description: Contract id, as listed in the Clearing House
+        token:
+          type: string
+          title: Token
+          description: The signed contract (VC-JWT)
+      type: object
+      required:
+      - region
+      - jti
+      - token
+      title: OrderContract
+      description: A contract issued for (part of) an order by one region's generator.
     RetrieveOrderResponse:
       properties:
         order_id:
@@ -135,6 +162,13 @@ components:
           type: array
           title: Data
           description: Array of dataset objects
+        contracts:
+          items:
+            $ref: '#/components/schemas/OrderContract'
+          type: array
+          title: Contracts
+          description: Contracts issued for this order, held as long as the order
+            is.
       type: object
       required:
       - order_id
@@ -163,6 +197,14 @@ components:
           type: integer
           title: Expires In Seconds
           description: TTL in seconds
+        contracts:
+          items:
+            $ref: '#/components/schemas/OrderContract'
+          type: array
+          title: Contracts
+          description: Contracts issued for this order, one per region with a contract
+            generator. Empty when none could be issued; the order is stored either
+            way.
       type: object
       required:
       - order_id

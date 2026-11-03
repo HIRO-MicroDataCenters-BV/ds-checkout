@@ -125,8 +125,10 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [Authorization](docs/Authorization.md)
  - [HTTPValidationError](docs/HTTPValidationError.md)
  - [HealthCheck](docs/HealthCheck.md)
+ - [OrderContract](docs/OrderContract.md)
  - [RetrieveOrderResponse](docs/RetrieveOrderResponse.md)
  - [StoreOrderRequest](docs/StoreOrderRequest.md)
  - [StoreOrderResponse](docs/StoreOrderResponse.md)

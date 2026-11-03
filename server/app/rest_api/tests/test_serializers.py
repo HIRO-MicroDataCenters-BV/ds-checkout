@@ -237,7 +237,11 @@ class TestStoreOrderResponseSerializer:
         )
 
         data = response.model_dump()
-        expected = {"order_id": "test-order-123", "expires_in_seconds": 7200}
+        expected = {
+            "order_id": "test-order-123",
+            "expires_in_seconds": 7200,
+            "contracts": [],
+        }
         assert data == expected
 
     def test_store_order_response_json_serialization(self):
@@ -340,7 +344,11 @@ class TestRetrieveOrderResponseSerializer:
         )
 
         data = response.model_dump()
-        expected = {"order_id": "test-order-123", "data": sample_retrieved_data}
+        expected = {
+            "order_id": "test-order-123",
+            "data": sample_retrieved_data,
+            "contracts": [],
+        }
         assert data == expected
 
     def test_retrieve_order_response_json_serialization(self, sample_retrieved_data):

@@ -2,6 +2,8 @@
 
 from typing import Any
 
+import base64
+import json
 import uuid
 from unittest.mock import AsyncMock
 
@@ -329,3 +331,167 @@ class TestOrdersRoutes:
         # Check retrieve order endpoint has correct tag
         retrieve_endpoint = paths.get("/orders/{order_id}", {}).get("get", {})
         assert "Orders" in retrieve_endpoint.get("tags", [])
+
+
+class TestOrdersRoutesContracts:
+    """Contracts issued when an order is stored, and returned with it."""
+
+    @pytest.fixture
+    def app_with(self):
+        def make(mock_usecases):
+            app = FastAPI()
+            app.include_router(OrdersRoutes().router)
+            app.dependency_overrides[get_usecase] = lambda: mock_usecases
+            return app
+
+        return make
+
+    @pytest.fixture
+    def order(self):
+        return {
+            "dcat:dataset": [
+                {
+                    "identifier": "a",
+                    "title": "A",
+                    "region": "hus",
+                    "dcat:distribution": [{"dcat:accessURL": "https://x/a.csv"}],
+                }
+            ]
+        }
+
+    def test_issues_stores_and_returns_contracts(self, app_with, order, monkeypatch):
+        from app.core.contracts import IssuedContract
+        from app.rest_api.routes import orders as orders_module
+        from app.settings import ContractGeneratorSettings
+
+        monkeypatch.setattr(
+            orders_module.settings,
+            "CONTRACT_GENERATORS",
+            {"HUS": ContractGeneratorSettings(url="http://gen", node_id="hus.node")},
+        )
+        calls = {}
+
+        async def fake_issue(**kwargs):
+            calls.update(kwargs)
+            return [IssuedContract(region="hus", jti="j-1", token="t.o.k")]
+
+        monkeypatch.setattr(orders_module, "issue_contracts_for_order", fake_issue)
+        mock_usecases = AsyncMock(spec=usecases.OrderUsecases)
+        mock_usecases.store_order.return_value = ("order-1", 7200)
+
+        claims = {
+            "sub": "EAID",
+            "email": "researcher@hus.example",
+            "role": "researcher",
+        }
+        token = ".".join(
+            base64.urlsafe_b64encode(json.dumps(part).encode()).decode().rstrip("=")
+            for part in ({"alg": "RS256"}, claims)
+        )
+        with TestClient(app_with(mock_usecases)) as client:
+            response = client.post(
+                "/orders",
+                json={"data": order},
+                headers={"Authorization": f"Bearer {token}.sig"},
+            )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["contracts"] == [
+            {"region": "hus", "jti": "j-1", "token": "t.o.k"}
+        ]
+        assert calls["consumer_id"] == "researcher@hus.example"
+        assert calls["ttl_seconds"] == 7200
+        assert set(calls["generators"]) == {"hus"}  # region keys lowercased
+        mock_usecases.store_contracts.assert_awaited_once_with(
+            "order-1", [{"region": "hus", "jti": "j-1", "token": "t.o.k"}], 7200
+        )
+
+    def test_order_succeeds_when_no_contract_could_be_issued(
+        self, app_with, order, monkeypatch
+    ):
+        from app.rest_api.routes import orders as orders_module
+        from app.settings import ContractGeneratorSettings
+
+        monkeypatch.setattr(
+            orders_module.settings,
+            "CONTRACT_GENERATORS",
+            {"hus": ContractGeneratorSettings(url="http://gen", node_id="hus.node")},
+        )
+        default_consumer = orders_module.settings.CONTRACT_DEFAULT_CONSUMER_ID
+
+        async def none_issued(**kwargs):
+            assert kwargs["consumer_id"] == default_consumer
+            return []
+
+        monkeypatch.setattr(orders_module, "issue_contracts_for_order", none_issued)
+        mock_usecases = AsyncMock(spec=usecases.OrderUsecases)
+        mock_usecases.store_order.return_value = ("order-2", 7200)
+
+        with TestClient(app_with(mock_usecases)) as client:
+            response = client.post("/orders", json={"data": order})
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["contracts"] == []
+        mock_usecases.store_contracts.assert_not_awaited()
+
+    def test_order_succeeds_when_storing_contracts_fails(
+        self, app_with, order, monkeypatch
+    ):
+        from app.core.contracts import IssuedContract
+        from app.rest_api.routes import orders as orders_module
+        from app.settings import ContractGeneratorSettings
+
+        monkeypatch.setattr(
+            orders_module.settings,
+            "CONTRACT_GENERATORS",
+            {"hus": ContractGeneratorSettings(url="http://gen", node_id="hus.node")},
+        )
+
+        async def one_issued(**kwargs):
+            return [IssuedContract(region="hus", jti="j", token="t")]
+
+        monkeypatch.setattr(orders_module, "issue_contracts_for_order", one_issued)
+        mock_usecases = AsyncMock(spec=usecases.OrderUsecases)
+        mock_usecases.store_order.return_value = ("order-3", 7200)
+        mock_usecases.store_contracts.side_effect = RuntimeError("redis down")
+
+        with TestClient(app_with(mock_usecases)) as client:
+            response = client.post("/orders", json={"data": order})
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["order_id"] == "order-3"
+
+    def test_no_generators_configured_means_no_contracts(
+        self, app_with, order, monkeypatch
+    ):
+        from app.rest_api.routes import orders as orders_module
+
+        monkeypatch.setattr(orders_module.settings, "CONTRACT_GENERATORS", {})
+
+        async def must_not_run(**kwargs):
+            raise AssertionError("no generator is configured")
+
+        monkeypatch.setattr(orders_module, "issue_contracts_for_order", must_not_run)
+        mock_usecases = AsyncMock(spec=usecases.OrderUsecases)
+        mock_usecases.store_order.return_value = ("order-4", 7200)
+
+        with TestClient(app_with(mock_usecases)) as client:
+            response = client.post("/orders", json={"data": order})
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["contracts"] == []
+
+    def test_retrieve_returns_the_stored_contracts(self, app_with):
+        mock_usecases = AsyncMock(spec=usecases.OrderUsecases)
+        mock_usecases.retrieve_order.return_value = {"data": [{"identifier": "a"}]}
+        mock_usecases.retrieve_contracts.return_value = [
+            {"region": "hus", "jti": "j-1", "token": "t.o.k"}
+        ]
+
+        with TestClient(app_with(mock_usecases)) as client:
+            response = client.get(f"/orders/{uuid.uuid4()}")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["contracts"] == [
+            {"region": "hus", "jti": "j-1", "token": "t.o.k"}
+        ]
